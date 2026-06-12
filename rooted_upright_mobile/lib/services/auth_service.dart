@@ -1,4 +1,5 @@
 import 'package:amazon_cognito_identity_dart_2/cognito.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthService {
   final userPool = CognitoUserPool(
@@ -20,5 +21,24 @@ class AuthService {
       // Surface the error to the caller
       rethrow;
     }
+  }
+  // Extracts the user's unique sub from the identity token
+  String? getUserSub(CognitoUserSession session) {
+    final idToken = session.idToken.payload;
+    return idToken['sub'] as String?;
+  }
+  // Saves credentials locally for remember me
+  Future<void> saveCredentials(String email, String password) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('email', email);
+    await prefs.setString('password', password);
+  }
+  // Retrieves saved credentials if they exist
+  Future<Map<String, String>?> getSavedCredentials() async {
+    final prefs = await SharedPreferences.getInstance();
+    return {
+      'email': prefs.getString('email') ?? '',
+      'password': prefs.getString('password') ?? '',
+    };
   }
 }

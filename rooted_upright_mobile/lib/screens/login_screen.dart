@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:rooted_upright_mobile/services/auth_service.dart';
 import 'widget_guide_screen.dart';
+import 'catalog_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -17,6 +18,12 @@ class _LoginScreenState extends State<LoginScreen> {
 
   // Tracks login request in progress
   bool _isLoading = false;
+
+  // Tracks whether password is visible
+  bool _obscurePassword = true;
+
+  // Tracks remember me toggle
+  bool _rememberMe = false;
 
   // Holds any error message to display
   String? _errorMessage;
@@ -40,8 +47,22 @@ class _LoginScreenState extends State<LoginScreen> {
       if (!mounted) return;
 
       if (session != null && session.isValid()) {
-        // Navigate to catalog screen on success
-        Navigator.pushReplacementNamed(context, '/catalog');
+        // Save credentials if remember me is checked
+      if (_rememberMe) {
+          await _authService.saveCredentials(
+            _emailController.text.trim(),
+            _passwordController.text.trim(),
+          );
+        }
+        final userId = _authService.getUserSub(session);
+        // Check widget is still mounted before navigating
+        if (!mounted) return;
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => CatalogScreen(userId: userId ?? ''),
+          ),
+        );
       }
     } catch (e) {
       if (!mounted) return;
@@ -54,6 +75,24 @@ class _LoginScreenState extends State<LoginScreen> {
           _isLoading = false;
         });
       }
+    }
+  }
+
+  // Loads saved credentials on screen init
+  @override
+  void initState() {
+    super.initState();
+    _loadSavedCredentials();
+  }
+
+  Future<void> _loadSavedCredentials() async {
+    final credentials = await _authService.getSavedCredentials();
+    if (credentials != null && credentials['email'] != null) {
+      setState(() {
+        _emailController.text = credentials['email']!;
+        _passwordController.text = credentials['password']!;
+        _rememberMe = true;
+      });
     }
   }
 
@@ -200,13 +239,27 @@ class _LoginScreenState extends State<LoginScreen> {
                     TextField(
                       // Password input
                       // obscureText hides the input, like type="password" in HTML
-                      obscureText: true,
+                      obscureText: _obscurePassword,
                       controller: _passwordController,
                       style: const TextStyle(
                         color: Color(0xFFaaff00),
                         fontFamily: 'monospace',
                       ),
                       decoration: InputDecoration(
+                        suffixIcon: IconButton(
+                          // Toggle password visibility
+                          onPressed: () {
+                            setState(() {
+                              _obscurePassword = !_obscurePassword;
+                            });
+                          },
+                          icon: Icon(
+                            _obscurePassword
+                                ? Icons.visibility_off
+                                : Icons.visibility,
+                            color: const Color(0x77aaff00),
+                          ),
+                        ),
                         hintText: '••••••••',
                         hintStyle: const TextStyle(
                           color: Color(0x55aaff00),
@@ -233,6 +286,30 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                         ),
                       ),
+                    ),
+                    // Remember me toggle
+                    Row(
+                      children: [
+                        Checkbox(
+                          value: _rememberMe,
+                          onChanged: (value) {
+                            setState(() {
+                              _rememberMe = value ?? false;
+                            });
+                          },
+                          checkColor: const Color(0xFF080d00),
+                          fillColor: WidgetStateProperty.all(const Color(0xFFaaff00)),
+                        ),
+                        const Text(
+                          'REMEMBER ME',
+                          style: TextStyle(
+                            fontSize: 9,
+                            letterSpacing: 3,
+                            color: Color(0x77aaff00),
+                            fontFamily: 'monospace',
+                          ),
+                        ),
+                      ],
                     ),
                     const SizedBox(height: 28),
                     // Button section
@@ -261,6 +338,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                       ),
                     ),
+
                     const SizedBox(height: 16),
                     // Error message display
                     if (_errorMessage != null)
@@ -277,6 +355,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                         ),
                       ),
+
                     TextButton(
                       // Register link
                       onPressed: () {},
