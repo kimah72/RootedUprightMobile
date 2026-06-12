@@ -1,9 +1,61 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:rooted_upright_mobile/services/auth_service.dart';
 import 'widget_guide_screen.dart';
 
-class LoginScreen extends StatelessWidget {
+class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
+
+  @override
+  State<LoginScreen> createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends State<LoginScreen> {
+  // Controls for capturing user input
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+
+  // Tracks login request in progress
+  bool _isLoading = false;
+
+  // Holds any error message to display
+  String? _errorMessage;
+
+  // Auth service instance
+  final AuthService _authService = AuthService();
+
+  // Handles login button tap
+  Future<void> _signIn() async {
+    setState(() {
+      _isLoading = true;
+      _errorMessage = null;
+    });
+
+    try {
+      final session = await _authService.signIn(
+        _emailController.text.trim(),
+        _passwordController.text.trim(),
+      );
+
+      if (!mounted) return;
+
+      if (session != null && session.isValid()) {
+        // Navigate to catalog screen on success
+        Navigator.pushReplacementNamed(context, '/catalog');
+      }
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _errorMessage = 'Invalid credentials. Please try again.';
+      });
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -37,7 +89,10 @@ class LoginScreen extends StatelessWidget {
                     // Beta badge
                     Container(
                       margin: const EdgeInsets.only(top: 6),
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 2,
+                      ),
                       decoration: BoxDecoration(
                         border: Border.all(color: const Color(0x55aaff00)),
                         borderRadius: BorderRadius.circular(2),
@@ -94,6 +149,7 @@ class LoginScreen extends StatelessWidget {
                     const SizedBox(height: 8),
                     TextField(
                       // Email input
+                      controller: _emailController,
                       keyboardType: TextInputType.emailAddress,
                       style: const TextStyle(
                         color: Color(0xFFaaff00),
@@ -109,15 +165,21 @@ class LoginScreen extends StatelessWidget {
                         fillColor: const Color(0xFF0d1500),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(4),
-                          borderSide: const BorderSide(color: Color(0x33aaff00)),
+                          borderSide: const BorderSide(
+                            color: Color(0x33aaff00),
+                          ),
                         ),
                         enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(4),
-                          borderSide: const BorderSide(color: Color(0x33aaff00)),
+                          borderSide: const BorderSide(
+                            color: Color(0x33aaff00),
+                          ),
                         ),
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(4),
-                          borderSide: const BorderSide(color: Color(0xFFaaff00)),
+                          borderSide: const BorderSide(
+                            color: Color(0xFFaaff00),
+                          ),
                         ),
                       ),
                     ),
@@ -139,6 +201,7 @@ class LoginScreen extends StatelessWidget {
                       // Password input
                       // obscureText hides the input, like type="password" in HTML
                       obscureText: true,
+                      controller: _passwordController,
                       style: const TextStyle(
                         color: Color(0xFFaaff00),
                         fontFamily: 'monospace',
@@ -153,15 +216,21 @@ class LoginScreen extends StatelessWidget {
                         fillColor: const Color(0xFF0d1500),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(4),
-                          borderSide: const BorderSide(color: Color(0x33aaff00)),
+                          borderSide: const BorderSide(
+                            color: Color(0x33aaff00),
+                          ),
                         ),
                         enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(4),
-                          borderSide: const BorderSide(color: Color(0x33aaff00)),
+                          borderSide: const BorderSide(
+                            color: Color(0x33aaff00),
+                          ),
                         ),
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(4),
-                          borderSide: const BorderSide(color: Color(0xFFaaff00)),
+                          borderSide: const BorderSide(
+                            color: Color(0xFFaaff00),
+                          ),
                         ),
                       ),
                     ),
@@ -172,8 +241,8 @@ class LoginScreen extends StatelessWidget {
                       width: double.infinity,
                       child: ElevatedButton(
                         // Login button
-                        // onPressed is the callback for when the button is tapped - currently empty -- auth logic comes later.
-                        onPressed: () {},
+                        // r is the callback for when the button is tapped - currently empty -- auth logic comes later.
+                        onPressed: _isLoading ? null : _signIn,
                         style: ElevatedButton.styleFrom(
                           backgroundColor: const Color(0xFFaaff00),
                           foregroundColor: const Color(0xFF080d00),
@@ -193,6 +262,21 @@ class LoginScreen extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 16),
+                    // Error message display
+                    if (_errorMessage != null)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 12),
+                        child: Text(
+                          _errorMessage!,
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(
+                            color: Color(0xFFff0000),
+                            fontFamily: 'monospace',
+                            fontSize: 11,
+                            letterSpacing: 1,
+                          ),
+                        ),
+                      ),
                     TextButton(
                       // Register link
                       onPressed: () {},
@@ -223,10 +307,7 @@ class LoginScreen extends StatelessWidget {
                     ),
                   );
                 },
-                child: const Text(
-                  '🌿',
-                  style: TextStyle(fontSize: 24),
-                ),
+                child: const Text('🌿', style: TextStyle(fontSize: 24)),
               ),
             ),
           ],
