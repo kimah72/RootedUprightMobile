@@ -43,3 +43,20 @@ Tasks:
   - Created catalog_screen.dart placeholder ✅
   - Registered named routes in main.dart ✅
   - Successfully authenticated against Cognito ✅
+
+  ## Friday June 12, 2026
+Start: 3:24 PM MST
+Stop: 6:48 PM MST
+Total: 3 hr 24 min (minus ~45 min dinner break) = ~2 hr 39 min active
+
+Tasks:
+  - Researched and implemented catalog screen aesthetic ✅
+  - Built plant catalog screen with API connection ✅
+  - Styled specimen cards with Toxic Lime dossier look ✅
+  - Added plant count badge to AppBar ✅
+  - Added password show/hide toggle ✅
+  - Added remember me with shared_preferences ✅
+  - Built plant detail screen with dossier layout ✅
+  - Added SPECIMEN FILE subtitle to AppBar ✅
+  - Built care log screen stub ✅
+  - Wired navigation: catalog -> detail -> care log ✅

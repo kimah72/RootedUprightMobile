@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'plant_detail_screen.dart';
+
 
 class CatalogScreen extends StatefulWidget {
   // userId passed from login screen
@@ -122,9 +124,19 @@ class _CatalogScreenState extends State<CatalogScreen> {
                   itemCount: _plants.length,
                   itemBuilder: (context, index) {
                     final plant = _plants[index];
-                    return Container(
-                      // Specimen card
-                      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                    return GestureDetector(
+                      // Navigate to plant detail on tap
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => PlantDetailScreen(plant: plant),
+                          ),
+                        );
+                      },
+                      child: Container(
+                        // Specimen card
+                        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
                       decoration: BoxDecoration(
                         color: const Color(0xFF111f00),
                         border: Border(
@@ -198,9 +210,10 @@ class _CatalogScreenState extends State<CatalogScreen> {
                           ],
                         ),
                       ),
-                    );
-                  },
-                ),
+                    ),
+                  );
+                },
+              ),
     );
   }
 }
