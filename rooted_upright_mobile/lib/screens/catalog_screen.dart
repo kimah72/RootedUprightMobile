@@ -42,6 +42,8 @@ class _CatalogScreenState extends State<CatalogScreen> {
         setState(() {
           // Parse the JSON response into a list
           _plants = jsonDecode(response.body);
+          // Sort alphabetically by plant name
+          _plants.sort((a, b) => (a['name'] ?? '').compareTo(b['name'] ?? ''));
           _isLoading = false;
         });
       } else {
