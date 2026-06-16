@@ -60,3 +60,13 @@ Tasks:
   - Added SPECIMEN FILE subtitle to AppBar ✅
   - Built care log screen stub ✅
   - Wired navigation: catalog -> detail -> care log ✅
+
+  ## Monday June 15, 2026
+Start: 6:40 PM MST
+Stop: 7:45 PM MST
+Total: 1 hr 5 min
+
+Tasks:
+  - Built Add Plant screen with full form ✅
+  - Added floating action button to catalog ✅
+  - Successfully added Harry Potter to DynamoDB ✅

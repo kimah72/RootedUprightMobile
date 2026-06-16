@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'plant_detail_screen.dart';
+import 'add_plant_screen.dart';
 
 
 class CatalogScreen extends StatefulWidget {
@@ -216,6 +217,22 @@ class _CatalogScreenState extends State<CatalogScreen> {
                   );
                 },
               ),
+        floatingActionButton: FloatingActionButton(
+          // Navigate to add plant screen
+          backgroundColor: const Color(0xFFaaff00),
+          foregroundColor: const Color(0xFF080d00),
+          onPressed: () async {
+            await Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => AddPlantScreen(userId: widget.userId),
+              ),
+            );
+            // Refresh the catalog after returning
+            _fetchPlants();
+          },
+          child: const Icon(Icons.add),
+        ),
     );
   }
 }
