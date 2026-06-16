@@ -70,3 +70,19 @@ Tasks:
   - Built Add Plant screen with full form ✅
   - Added floating action button to catalog ✅
   - Successfully added Harry Potter to DynamoDB ✅
+
+  ## Tuesday June 16, 2026
+Start: 2:44 PM MST
+Stop: 5:35 PM MST
+Total: 2 hr 51 min
+
+Tasks:
+  - Restyled catalog cards with file folder tab design ✅
+  - Built Edit Plant screen with pre-populated form ✅
+  - Fixed Lambda to update name and watchFor fields ✅
+  - Plant detail screen refreshes after edit ✅
+  - Catalog refreshes after returning from detail ✅
+  - Added Delete Plant with amber confirmation dialog ✅
+  - Wired Care Log screen with real API data ✅
+  - Built Add Care Log screen with dropdown care types ✅
+  - Full CRUD working on plants and care logs ✅
