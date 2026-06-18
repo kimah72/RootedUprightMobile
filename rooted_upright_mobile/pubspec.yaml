@@ -38,6 +38,7 @@ dependencies:
   amazon_cognito_identity_dart_2: ^4.0.0
   http: ^1.6.0
   shared_preferences: ^2.5.5
+  flutter_launcher_icons: ^0.14.4
 
 dev_dependencies:
   flutter_test:
@@ -60,6 +61,8 @@ flutter:
   # included with your application, so that you can use the icons in
   # the material Icons class.
   uses-material-design: true
+  assets:
+    - assets/icon/
 
   # To add assets to your application, add an assets section, like this:
   # assets:
@@ -91,3 +94,9 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
+  
+flutter_launcher_icons:
+  android: true
+  ios: false
+  image_path: "assets/icon/icon.png"
+  min_sdk_android: 21
