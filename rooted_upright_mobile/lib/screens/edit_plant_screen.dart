@@ -95,7 +95,7 @@ class _EditPlantScreenState extends State<EditPlantScreen> {
                 child: Text(
                   _errorMessage!,
                   style: const TextStyle(
-                    color: Color(0xFFff0000),
+                    color: Color(0xFFffb000),
                     fontFamily: 'monospace',
                     fontSize: 11,
                   ),

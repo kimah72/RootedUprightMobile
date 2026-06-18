@@ -348,7 +348,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           _errorMessage!,
                           textAlign: TextAlign.center,
                           style: const TextStyle(
-                            color: Color(0xFFff0000),
+                            color: Color(0xFFffb000),
                             fontFamily: 'monospace',
                             fontSize: 11,
                             letterSpacing: 1,

@@ -3,27 +3,27 @@ import 'package:google_fonts/google_fonts.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
-class AddCareLogScreen extends StatefulWidget {
-  // Plant data needed for plantId
-  final Map<String, dynamic> plant;
+class EditCareLogScreen extends StatefulWidget {
+  // Care log data to pre-populate the form
+  final Map<String, dynamic> careLog;
 
-  const AddCareLogScreen({super.key, required this.plant});
+  const EditCareLogScreen({super.key, required this.careLog});
 
   @override
-  State<AddCareLogScreen> createState() => _AddCareLogScreenState();
+  State<EditCareLogScreen> createState() => _EditCareLogScreenState();
 }
 
-class _AddCareLogScreenState extends State<AddCareLogScreen> {
-  // Selected care type
-  String _careType = 'Watering';
-  // Notes controller
-  final TextEditingController _notesController = TextEditingController();
+class _EditCareLogScreenState extends State<EditCareLogScreen> {
+  // Selected care type -- pre-populated
+  late String _careType;
+  // Notes controller -- pre-populated
+  late TextEditingController _notesController;
   // Tracks submission in progress
   bool _isSubmitting = false;
   // Holds any error message
   String? _errorMessage;
 
-  // Care type options matching web app
+  // Care type options
   final List<String> _careTypes = [
     'Watering',
     'Fertilizing',
@@ -35,6 +35,14 @@ class _AddCareLogScreenState extends State<AddCareLogScreen> {
   ];
 
   @override
+  void initState() {
+    super.initState();
+    // Pre-populate with existing care log data
+    _careType = widget.careLog['careType'] ?? 'Watering';
+    _notesController = TextEditingController(text: widget.careLog['notes'] ?? '');
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFF080d00),
@@ -42,9 +50,9 @@ class _AddCareLogScreenState extends State<AddCareLogScreen> {
         backgroundColor: const Color(0xFF080d00),
         elevation: 0,
         title: Text(
-          '${widget.plant['name']} // LOG CARE',
+          'EDIT CARE LOG',
           style: GoogleFonts.orbitron(
-            fontSize: 12,
+            fontSize: 14,
             color: const Color(0xFFaaff00),
             letterSpacing: 2,
           ),
@@ -86,7 +94,6 @@ class _AddCareLogScreenState extends State<AddCareLogScreen> {
               ),
               child: DropdownButtonHideUnderline(
                 child: DropdownButton<String>(
-                  // Selected care type
                   value: _careType,
                   isExpanded: true,
                   dropdownColor: const Color(0xFF0d1500),
@@ -131,7 +138,7 @@ class _AddCareLogScreenState extends State<AddCareLogScreen> {
                 fontSize: 12,
               ),
               decoration: InputDecoration(
-                hintText: 'What did you do for this plant today?',
+                hintText: 'Update your care notes...',
                 hintStyle: const TextStyle(
                   color: Color(0x33aaff00),
                   fontFamily: 'monospace',
@@ -171,7 +178,7 @@ class _AddCareLogScreenState extends State<AddCareLogScreen> {
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
-                onPressed: _isSubmitting ? null : _submitCareLog,
+                onPressed: _isSubmitting ? null : _updateCareLog,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFFaaff00),
                   foregroundColor: const Color(0xFF080d00),
@@ -181,7 +188,7 @@ class _AddCareLogScreenState extends State<AddCareLogScreen> {
                   ),
                 ),
                 child: Text(
-                  _isSubmitting ? 'LOGGING...' : 'LOG CARE',
+                  _isSubmitting ? 'UPDATING...' : 'UPDATE LOG',
                   style: GoogleFonts.orbitron(
                     fontSize: 11,
                     fontWeight: FontWeight.w700,
@@ -196,30 +203,31 @@ class _AddCareLogScreenState extends State<AddCareLogScreen> {
     );
   }
 
-  // Submits care log to the API
-  Future<void> _submitCareLog() async {
+  // Sends updated care log to the API
+  Future<void> _updateCareLog() async {
     setState(() {
       _isSubmitting = true;
       _errorMessage = null;
     });
 
     try {
-      final response = await http.post(
+      final response = await http.put(
         Uri.parse('https://xt71zwxu10.execute-api.us-east-1.amazonaws.com/carelogs'),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({
-          'plantId': widget.plant['plantId'],
+          'logId': widget.careLog['logId'],
+          'plantId': widget.careLog['plantId'],
           'careType': _careType,
           'notes': _notesController.text.trim(),
         }),
       );
 
-      if (response.statusCode == 200 || response.statusCode == 201) {
+      if (response.statusCode == 200) {
         if (!mounted) return;
         Navigator.pop(context);
       } else {
         setState(() {
-          _errorMessage = 'Failed to log care. Try again.';
+          _errorMessage = 'Failed to update log. Try again.';
         });
       }
     } catch (e) {

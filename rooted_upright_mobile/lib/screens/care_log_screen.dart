@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'add_care_log_screen.dart';
+import 'edit_care_log_screen.dart';
 
 class CareLogScreen extends StatefulWidget {
   // Plant data passed from detail screen
@@ -61,6 +62,80 @@ class _CareLogScreenState extends State<CareLogScreen> {
     }
   }
 
+  // Shows confirmation before deleting
+void _confirmDelete(Map<String, dynamic> log) {
+  showDialog(
+    context: context,
+    builder: (context) => AlertDialog(
+      backgroundColor: const Color(0xFF0d1500),
+      title: Text(
+        'DELETE LOG',
+        style: GoogleFonts.orbitron(
+          fontSize: 13,
+          color: const Color(0xFFaaff00),
+          letterSpacing: 2,
+        ),
+      ),
+      content: Text(
+        'Remove this ${log['careType']} entry permanently?',
+        style: const TextStyle(
+          color: Color(0x99aaff00),
+          fontFamily: 'monospace',
+          fontSize: 12,
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: const Text(
+            'CANCEL',
+            style: TextStyle(
+              color: Color(0x77aaff00),
+              fontFamily: 'monospace',
+              letterSpacing: 2,
+            ),
+          ),
+        ),
+        TextButton(
+          onPressed: () {
+            Navigator.pop(context);
+            _deleteCareLog(log);
+          },
+          child: const Text(
+            'DELETE',
+            style: TextStyle(
+              color: Color(0xFFffb000),
+              fontFamily: 'monospace',
+              letterSpacing: 2,
+            ),
+          ),
+        ),
+      ],
+    ),
+  );
+}
+
+  // Deletes care log from DynamoDB
+  Future<void> _deleteCareLog(Map<String, dynamic> log) async {
+    try {
+      final response = await http.delete(
+        Uri.parse('https://xt71zwxu10.execute-api.us-east-1.amazonaws.com/carelogs'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'logId': log['logId'],
+          'plantId': log['plantId'],
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        // Refresh logs after deletion
+        _fetchCareLogs();
+      }
+    } catch (e) {
+      // Handle error silently for now
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -91,7 +166,7 @@ class _CareLogScreenState extends State<CareLogScreen> {
               child: Text(
                 _errorMessage!,
                 style: const TextStyle(
-                  color: Color(0xFFff0000),
+                  color: Color(0xFFffb000),
                   fontFamily: 'monospace',
                 ),
               ),
@@ -165,12 +240,55 @@ class _CareLogScreenState extends State<CareLogScreen> {
                             ),
                           ),
                         ),
+                      const SizedBox(height: 8),
+                      // Edit and delete actions
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          // Edit button
+                          TextButton(
+                            onPressed: () async {
+                              await Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      EditCareLogScreen(careLog: log),
+                                ),
+                              );
+                              // Refresh logs after edit
+                              _fetchCareLogs();
+                            },
+                            child: const Text(
+                              'EDIT',
+                              style: TextStyle(
+                                fontSize: 9,
+                                color: Color(0x77aaff00),
+                                fontFamily: 'monospace',
+                                letterSpacing: 2,
+                              ),
+                            ),
+                          ),
+                          // Delete button
+                          TextButton(
+                            onPressed: () => _confirmDelete(log),
+                            child: const Text(
+                              'DELETE',
+                              style: TextStyle(
+                                fontSize: 9,
+                                color: Color(0x77ffb000),
+                                fontFamily: 'monospace',
+                                letterSpacing: 2,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                     ],
                   ),
                 );
               },
             ),
-        floatingActionButton: FloatingActionButton(
+      floatingActionButton: FloatingActionButton(
         // Navigate to add care log screen
         backgroundColor: const Color(0xFFaaff00),
         foregroundColor: const Color(0xFF080d00),
