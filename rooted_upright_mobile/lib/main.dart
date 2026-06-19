@@ -15,6 +15,7 @@ void main() {
       title: 'Rooted Upright',
       theme: ThemeData(),
       home: const LoginScreen(),
+      debugShowCheckedModeBanner: false
     );
   }
 }

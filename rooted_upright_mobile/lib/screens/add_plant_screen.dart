@@ -196,10 +196,10 @@ Future<String?> _uploadImage(String plantId) async {
                 ),
               ),
               const SizedBox(height: 8),
-              // Photo preview or placeholder
+             // Photo preview or placeholder
               Container(
-                height: 180,
                 width: double.infinity,
+                constraints: const BoxConstraints(maxHeight: 300),
                 decoration: BoxDecoration(
                   color: const Color(0xFF0d1500),
                   border: Border.all(color: const Color(0x33aaff00)),
@@ -210,17 +210,20 @@ Future<String?> _uploadImage(String plantId) async {
                         borderRadius: BorderRadius.circular(2),
                         child: Image.file(
                           _selectedImage!,
-                          fit: BoxFit.cover,
+                          fit: BoxFit.contain,
                         ),
                       )
-                    : const Center(
-                        child: Text(
-                          'NO PHOTO SELECTED',
-                          style: TextStyle(
-                            fontSize: 9,
-                            color: Color(0x33aaff00),
-                            fontFamily: 'monospace',
-                            letterSpacing: 3,
+                    : const SizedBox(
+                        height: 180,
+                        child: Center(
+                          child: Text(
+                            'NO PHOTO SELECTED',
+                            style: TextStyle(
+                              fontSize: 9,
+                              color: Color(0x33aaff00),
+                              fontFamily: 'monospace',
+                              letterSpacing: 3,
+                            ),
                           ),
                         ),
                       ),
