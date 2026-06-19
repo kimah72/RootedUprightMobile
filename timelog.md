@@ -86,3 +86,17 @@ Tasks:
   - Wired Care Log screen with real API data ✅
   - Built Add Care Log screen with dropdown care types ✅
   - Full CRUD working on plants and care logs ✅
+
+  ## Tuesday June 18, 2026
+Start: 3:35 PM MST
+Stop: 6:58 PM MST
+Total: 3 hr 23 min
+
+Tasks:
+  - Care log edit and delete ✅
+  - Catalog search/filter by name, species, cultivar ✅
+  - Custom circuit Monstera app icon implemented ✅
+  - Full camera integration: S3 bucket, Lambda presigned URL, upload pipeline ✅
+  - Image display on catalog cards, detail screen, edit screen ✅
+  - Dynamic image sizing to prevent cropping ✅
+  - Custom splash screen with branded logo ✅
