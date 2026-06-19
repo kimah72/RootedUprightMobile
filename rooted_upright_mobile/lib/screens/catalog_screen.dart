@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'plant_detail_screen.dart';
 import 'add_plant_screen.dart';
+import 'gallery_screen.dart';
 
 
 class CatalogScreen extends StatefulWidget {
@@ -112,6 +113,22 @@ class _CatalogScreenState extends State<CatalogScreen> {
           ),
         ),
         actions: [
+          // Gallery view button
+          IconButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => GalleryScreen(plants: _plants),
+                ),
+              );
+            },
+            icon: const Icon(
+              Icons.photo_library_outlined,
+              color: Color(0x77aaff00),
+              size: 20,
+            ),
+          ),
           // Shows total plant count
           Container(
             margin: const EdgeInsets.only(right: 16),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class WidgetGuide extends StatefulWidget {
   const WidgetGuide({super.key});
@@ -127,7 +128,7 @@ class _WidgetGuideState extends State<WidgetGuide> {
                     ),
                   ],
                 ),
-              ExpansionTile(
+                ExpansionTile(
                 collapsedIconColor: const Color(0xFFffb000),
                 iconColor: const Color(0xFFffb000),
                   title: Text(
@@ -155,6 +156,58 @@ class _WidgetGuideState extends State<WidgetGuide> {
                   ),
                 ],
               ),
+            ExpansionTile(
+              // Support the lab easter egg
+              collapsedIconColor: const Color(0xFFffb000),
+              iconColor: const Color(0xFFffb000),
+              title: Text(
+                'SUPPORT THE LAB',
+                style: GoogleFonts.shareTechMono(
+                  fontSize: 15,
+                  color: const Color(0xFFffb000),
+                  letterSpacing: 1,
+                ),
+              ),
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'This lab runs on curiosity, late nights, and API credits. '
+                        'If this little experiment made you smile, '
+                        'consider supporting the gardener.',
+                        style: GoogleFonts.shareTechMono(
+                          fontSize: 11,
+                          color: const Color(0xBFffb000),
+                          letterSpacing: 1,
+                          height: 1.8,
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      GestureDetector(
+                        onTap: () async {
+                          final url = Uri.parse('https://ko-fi.com/kimah');
+                          if (await canLaunchUrl(url)) {
+                            await launchUrl(url, mode: LaunchMode.externalApplication);
+                          }
+                        },
+                        child: Text(
+                          '>> SUPPORT ON KO-FI',
+                          style: GoogleFonts.shareTechMono(
+                            fontSize: 12,
+                            color: const Color(0xFFffb000),
+                            decoration: TextDecoration.underline,
+                            letterSpacing: 2,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ],
         ),
       ),

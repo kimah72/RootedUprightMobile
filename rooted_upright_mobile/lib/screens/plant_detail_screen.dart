@@ -182,42 +182,65 @@ class _PlantDetailScreenState extends State<PlantDetailScreen> {
                     border: Border.all(color: const Color(0x33aaff00)),
                     borderRadius: BorderRadius.circular(4),
                   ),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(4),
-                    child: Image.network(
-                      _plant['imageUrl'],
-                      fit: BoxFit.contain,
-                      // Shows loading indicator while image downloads
-                      loadingBuilder: (context, child, progress) {
-                        if (progress == null) return child;
-                        return Container(
-                          height: 220,
-                          color: const Color(0xFF0d1500),
-                          child: const Center(
-                            child: CircularProgressIndicator(
-                              color: Color(0xFFaaff00),
+                  child: GestureDetector(
+                    // Tap to view full screen
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => Scaffold(
+                            backgroundColor: Colors.black,
+                            appBar: AppBar(
+                              backgroundColor: Colors.black,
+                              elevation: 0,
+                              iconTheme: const IconThemeData(color: Color(0xFFaaff00)),
                             ),
-                          ),
-                        );
-                      },
-                      // Shows fallback if image fails to load
-                      errorBuilder: (context, error, stackTrace) {
-                        return Container(
-                          height: 220,
-                          color: const Color(0xFF0d1500),
-                          child: const Center(
-                            child: Text(
-                              'IMAGE UNAVAILABLE',
-                              style: TextStyle(
-                                color: Color(0x55aaff00),
-                                fontFamily: 'monospace',
-                                fontSize: 10,
-                                letterSpacing: 2,
+                            body: Center(
+                              child: InteractiveViewer(
+                                child: Image.network(_plant['imageUrl']),
                               ),
                             ),
                           ),
-                        );
-                      },
+                        ),
+                      );
+                    },
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(4),
+                      child: Image.network(
+                        _plant['imageUrl'],
+                        fit: BoxFit.contain,
+                        // Shows loading indicator while image downloads
+                        loadingBuilder: (context, child, progress) {
+                          if (progress == null) return child;
+                          return Container(
+                            height: 220,
+                            color: const Color(0xFF0d1500),
+                            child: const Center(
+                              child: CircularProgressIndicator(
+                                color: Color(0xFFaaff00),
+                              ),
+                            ),
+                          );
+                        },
+                        // Shows fallback if image fails to load
+                        errorBuilder: (context, error, stackTrace) {
+                          return Container(
+                            height: 220,
+                            color: const Color(0xFF0d1500),
+                            child: const Center(
+                              child: Text(
+                                'IMAGE UNAVAILABLE',
+                                style: TextStyle(
+                                  color: Color(0x55aaff00),
+                                  fontFamily: 'monospace',
+                                  fontSize: 10,
+                                  letterSpacing: 2,
+                                ),
+                              ),
+                            ),
+                          );
+                        },
+                      ),
                     ),
                   ),
                 ),
