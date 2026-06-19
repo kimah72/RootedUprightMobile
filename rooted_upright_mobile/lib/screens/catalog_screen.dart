@@ -260,29 +260,68 @@ class _CatalogScreenState extends State<CatalogScreen> {
                                       bottomRight: Radius.circular(4),
                                     ),
                                   ),
-                                  child: Column(
+                                  child: Row(
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
-                                      // Species and cultivar
-                                      Text(
-                                        '${plant['species'] ?? ''} // ${plant['cultivar'] ?? ''}',
-                                        style: const TextStyle(
-                                          fontSize: 10,
-                                          color: Color(0x80aaff00),
-                                          letterSpacing: 1,
-                                          fontFamily: 'monospace',
+                                      // Photo thumbnail, only if imageUrl exists
+                                      if (plant['imageUrl'] != null && plant['imageUrl'].toString().isNotEmpty)
+                                        Padding(
+                                          padding: const EdgeInsets.only(right: 10),
+                                          child: Container(
+                                            width: 50,
+                                            height: 50,
+                                            decoration: BoxDecoration(
+                                              border: Border.all(color: const Color(0x59aaff00)),
+                                              borderRadius: BorderRadius.circular(2),
+                                            ),
+                                            child: ClipRRect(
+                                              borderRadius: BorderRadius.circular(2),
+                                              child: Image.network(
+                                                plant['imageUrl'],
+                                                width: 50,
+                                                height: 50,
+                                                fit: BoxFit.cover,
+                                                // Shows nothing while loading to avoid layout flicker
+                                                loadingBuilder: (context, child, progress) {
+                                                  if (progress == null) return child;
+                                                  return const SizedBox(width: 50, height: 50);
+                                                },
+                                                // Hides broken images gracefully
+                                                errorBuilder: (context, error, stackTrace) {
+                                                  return const SizedBox(width: 50, height: 50);
+                                                },
+                                              ),
+                                            ),
+                                          ),
                                         ),
-                                      ),
-                                      const SizedBox(height: 4),
-                                      // Lore
-                                      Text(
-                                        plant['lore'] ?? '',
-                                        style: const TextStyle(
-                                          fontSize: 10,
-                                          color: Color(0x59aaff00),
-                                          fontFamily: 'monospace',
-                                          fontStyle: FontStyle.italic,
-                                          height: 1.5,
+                                      // Text content
+                                      Expanded(
+                                        child: Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            // Species and cultivar
+                                            Text(
+                                              '${plant['species'] ?? ''} // ${plant['cultivar'] ?? ''}',
+                                              style: const TextStyle(
+                                                fontSize: 10,
+                                                color: Color(0x80aaff00),
+                                                letterSpacing: 1,
+                                                fontFamily: 'monospace',
+                                              ),
+                                            ),
+                                            const SizedBox(height: 4),
+                                            // Lore
+                                            Text(
+                                              plant['lore'] ?? '',
+                                              style: const TextStyle(
+                                                fontSize: 10,
+                                                color: Color(0x59aaff00),
+                                                fontFamily: 'monospace',
+                                                fontStyle: FontStyle.italic,
+                                                height: 1.5,
+                                              ),
+                                            ),
+                                          ],
                                         ),
                                       ),
                                     ],

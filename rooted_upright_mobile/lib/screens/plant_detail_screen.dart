@@ -171,6 +171,57 @@ class _PlantDetailScreenState extends State<PlantDetailScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // Plant photo, shown only if one exists
+            if (_plant['imageUrl'] != null && _plant['imageUrl'].toString().isNotEmpty)
+              Padding(
+                padding: const EdgeInsets.only(bottom: 16),
+                child: Container(
+                  width: double.infinity,
+                  constraints: const BoxConstraints(maxHeight: 300),
+                  decoration: BoxDecoration(
+                    border: Border.all(color: const Color(0x33aaff00)),
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(4),
+                    child: Image.network(
+                      _plant['imageUrl'],
+                      fit: BoxFit.contain,
+                      // Shows loading indicator while image downloads
+                      loadingBuilder: (context, child, progress) {
+                        if (progress == null) return child;
+                        return Container(
+                          height: 220,
+                          color: const Color(0xFF0d1500),
+                          child: const Center(
+                            child: CircularProgressIndicator(
+                              color: Color(0xFFaaff00),
+                            ),
+                          ),
+                        );
+                      },
+                      // Shows fallback if image fails to load
+                      errorBuilder: (context, error, stackTrace) {
+                        return Container(
+                          height: 220,
+                          color: const Color(0xFF0d1500),
+                          child: const Center(
+                            child: Text(
+                              'IMAGE UNAVAILABLE',
+                              style: TextStyle(
+                                color: Color(0x55aaff00),
+                                fontFamily: 'monospace',
+                                fontSize: 10,
+                                letterSpacing: 2,
+                              ),
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ),
+              ),
             // Genus and cultivar boxes
             Row(
               children: [

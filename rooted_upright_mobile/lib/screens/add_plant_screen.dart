@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'dart:io';
+import 'package:image_picker/image_picker.dart';
 
 class AddPlantScreen extends StatefulWidget {
   // userId needed to associate plant with user
@@ -26,6 +28,10 @@ class _AddPlantScreenState extends State<AddPlantScreen> {
   bool _isSubmitting = false;
   // Holds any error message
   String? _errorMessage;
+  // Selected image file
+  File? _selectedImage;
+  // Image picker instance
+  final ImagePicker _picker = ImagePicker();
 
   // Submits new plant to the API
   Future<void> _submitPlant() async {
@@ -58,7 +64,29 @@ class _AddPlantScreenState extends State<AddPlantScreen> {
       );
 
       if (response.statusCode == 200 || response.statusCode == 201) {
-        // Go back to catalog on success
+        // Extract plantId from response to upload image
+        final responseData = jsonDecode(response.body);
+        final plantId = responseData['plantId'];
+        final imageUrl = await _uploadImage(plantId);
+
+        // Save imageUrl to plant record if upload succeeded
+        if (imageUrl != null) {
+          await http.put(
+            Uri.parse('https://xt71zwxu10.execute-api.us-east-1.amazonaws.com/plants'),
+            headers: {'Content-Type': 'application/json'},
+            body: jsonEncode({
+              'plantId': plantId,
+              'name': _nameController.text.trim(),
+              'species': _speciesController.text.trim(),
+              'cultivar': _cultivarController.text.trim(),
+              'lore': _loreController.text.trim(),
+              'careInstructions': _careController.text.trim(),
+              'watchFor': _watchController.text.trim(),
+              'imageUrl': imageUrl,
+            }),
+          );
+        }
+
         if (!mounted) return;
         Navigator.pop(context);
       } else {
@@ -76,6 +104,56 @@ class _AddPlantScreenState extends State<AddPlantScreen> {
       });
     }
   }
+  // Opens camera or gallery to select an image
+  Future<void> _pickImage(ImageSource source) async {
+    final XFile? picked = await _picker.pickImage(
+      source: source,
+      maxWidth: 1024,
+      maxHeight: 1024,
+      imageQuality: 85,
+    );
+
+    if (picked != null) {
+      setState(() {
+        _selectedImage = File(picked.path);
+      });
+    }
+  }
+// Uploads image to S3 via presigned URL, returns the image URL
+Future<String?> _uploadImage(String plantId) async {
+  if (_selectedImage == null) return null;
+
+  try {
+    // Get presigned URL from Lambda
+    final urlResponse = await http.post(
+      Uri.parse('https://xt71zwxu10.execute-api.us-east-1.amazonaws.com/upload-url'),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({
+        'plantId': plantId,
+        'fileType': 'jpg',
+      }),
+    );
+
+    if (urlResponse.statusCode == 200) {
+      final urlData = jsonDecode(urlResponse.body);
+      final uploadUrl = urlData['uploadUrl'];
+      final imageUrl = urlData['imageUrl'];
+
+      // Upload image directly to S3
+      final imageBytes = await _selectedImage!.readAsBytes();
+      await http.put(
+        Uri.parse(uploadUrl),
+        headers: {'Content-Type': 'image/jpg'},
+        body: imageBytes,
+      );
+
+      return imageUrl;
+    }
+  } catch (e) {
+    // Image upload failed silently -- plant still saves
+  }
+  return null;
+}
     @override
     Widget build(BuildContext context) {
       return Scaffold(
@@ -107,6 +185,98 @@ class _AddPlantScreenState extends State<AddPlantScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              // Plant photo section
+              const Text(
+                'SPECIMEN PHOTO',
+                style: TextStyle(
+                  fontSize: 9,
+                  letterSpacing: 3,
+                  color: Color(0x99aaff00),
+                  fontFamily: 'monospace',
+                ),
+              ),
+              const SizedBox(height: 8),
+              // Photo preview or placeholder
+              Container(
+                height: 180,
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  color: const Color(0xFF0d1500),
+                  border: Border.all(color: const Color(0x33aaff00)),
+                  borderRadius: BorderRadius.circular(2),
+                ),
+                child: _selectedImage != null
+                    ? ClipRRect(
+                        borderRadius: BorderRadius.circular(2),
+                        child: Image.file(
+                          _selectedImage!,
+                          fit: BoxFit.cover,
+                        ),
+                      )
+                    : const Center(
+                        child: Text(
+                          'NO PHOTO SELECTED',
+                          style: TextStyle(
+                            fontSize: 9,
+                            color: Color(0x33aaff00),
+                            fontFamily: 'monospace',
+                            letterSpacing: 3,
+                          ),
+                        ),
+                      ),
+              ),
+              const SizedBox(height: 8),
+              // Camera and gallery buttons
+              Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton.icon(
+                      onPressed: () => _pickImage(ImageSource.camera),
+                      icon: const Icon(Icons.camera_alt, size: 16),
+                      label: const Text(
+                        'CAMERA',
+                        style: TextStyle(
+                          fontSize: 9,
+                          fontFamily: 'monospace',
+                          letterSpacing: 2,
+                        ),
+                      ),
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: const Color(0xFFaaff00),
+                        side: const BorderSide(color: Color(0x55aaff00)),
+                        padding: const EdgeInsets.symmetric(vertical: 10),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(2),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: OutlinedButton.icon(
+                      onPressed: () => _pickImage(ImageSource.gallery),
+                      icon: const Icon(Icons.photo_library, size: 16),
+                      label: const Text(
+                        'GALLERY',
+                        style: TextStyle(
+                          fontSize: 9,
+                          fontFamily: 'monospace',
+                          letterSpacing: 2,
+                        ),
+                      ),
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: const Color(0xFFaaff00),
+                        side: const BorderSide(color: Color(0x55aaff00)),
+                        padding: const EdgeInsets.symmetric(vertical: 10),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(2),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
               // Name field -- required
               _formField('SPECIMEN NAME', _nameController, 'e.g. Luna Lovegood'),
               const SizedBox(height: 16),
