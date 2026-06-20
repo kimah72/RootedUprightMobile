@@ -87,7 +87,7 @@ Tasks:
   - Built Add Care Log screen with dropdown care types ✅
   - Full CRUD working on plants and care logs ✅
 
-  ## Tuesday June 18, 2026
+  ## Thursday June 18, 2026
 Start: 3:35 PM MST
 Stop: 6:58 PM MST
 Total: 3 hr 23 min
@@ -100,3 +100,17 @@ Tasks:
   - Image display on catalog cards, detail screen, edit screen ✅
   - Dynamic image sizing to prevent cropping ✅
   - Custom splash screen with branded logo ✅
+
+  ## Friday June 19, 2026
+Start: 3:24 PM MST
+Stop: 6:00 PM MST
+Total: 2 hr 36 min
+
+Tasks:
+  - Tap-to-zoom on plant photo with InteractiveViewer ✅
+  - Ko-fi link added inside Widget Guide easter egg ✅
+  - Photo gallery screen built ✅
+  - Fixed add_plant_screen photo preview sizing ✅
+  - README finalized with screenshots ✅
+  - Demo video scripted and recorded ✅
+  - Module 4 submitted ✅
