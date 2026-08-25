@@ -3,6 +3,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:rooted_upright_mobile/services/auth_service.dart';
 import 'widget_guide_screen.dart';
 import 'catalog_screen.dart';
+import 'register_screen.dart';
+import 'forgot_password_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -309,6 +311,26 @@ class _LoginScreenState extends State<LoginScreen> {
                             fontFamily: 'monospace',
                           ),
                         ),
+                        const Spacer(),
+                        TextButton(
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const ForgotPasswordScreen(),
+                              ),
+                            );
+                          },
+                          child: const Text(
+                            'FORGOT?',
+                            style: TextStyle(
+                              fontSize: 9,
+                              letterSpacing: 2,
+                              color: Color(0x77aaff00),
+                              fontFamily: 'monospace',
+                            ),
+                          ),
+                        ),
                       ],
                     ),
                     const SizedBox(height: 28),
@@ -358,7 +380,14 @@ class _LoginScreenState extends State<LoginScreen> {
 
                     TextButton(
                       // Register link
-                      onPressed: () {},
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const RegisterScreen(),
+                          ),
+                        );
+                      },
                       child: const Text(
                         'NEW SPECIMEN? REGISTER',
                         style: TextStyle(

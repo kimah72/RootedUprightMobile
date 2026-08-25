@@ -378,7 +378,7 @@ class _EditPlantScreenState extends State<EditPlantScreen> {
       );
       if (response.statusCode == 200) {
         if (!mounted) return;
-        Navigator.pop(context);
+        Navigator.pop(context, 'Specimen updated.');
       } else {
         setState(() {
           _errorMessage = 'Failed to update specimen. Try again.';

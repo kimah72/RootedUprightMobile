@@ -216,7 +216,7 @@ class _AddCareLogScreenState extends State<AddCareLogScreen> {
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         if (!mounted) return;
-        Navigator.pop(context);
+        Navigator.pop(context, 'Care log entry saved.');
       } else {
         setState(() {
           _errorMessage = 'Failed to log care. Try again.';

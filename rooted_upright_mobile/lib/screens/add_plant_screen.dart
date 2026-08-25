@@ -88,7 +88,7 @@ class _AddPlantScreenState extends State<AddPlantScreen> {
         }
 
         if (!mounted) return;
-        Navigator.pop(context);
+        Navigator.pop(context, 'Specimen added to the catalog.');
       } else {
         setState(() {
           _errorMessage = 'Failed to add specimen. Try again.';

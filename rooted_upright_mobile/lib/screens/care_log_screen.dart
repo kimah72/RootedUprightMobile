@@ -130,6 +130,11 @@ void _confirmDelete(Map<String, dynamic> log) {
       if (response.statusCode == 200) {
         // Refresh logs after deletion
         _fetchCareLogs();
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Care log entry deleted.')),
+          );
+        }
       }
     } catch (e) {
       // Handle error silently for now
@@ -248,7 +253,7 @@ void _confirmDelete(Map<String, dynamic> log) {
                           // Edit button
                           TextButton(
                             onPressed: () async {
-                              await Navigator.push(
+                              final message = await Navigator.push<String?>(
                                 context,
                                 MaterialPageRoute(
                                   builder: (context) =>
@@ -257,6 +262,11 @@ void _confirmDelete(Map<String, dynamic> log) {
                               );
                               // Refresh logs after edit
                               _fetchCareLogs();
+                              if (message != null && context.mounted) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(content: Text(message)),
+                                );
+                              }
                             },
                             child: const Text(
                               'EDIT',
@@ -293,7 +303,7 @@ void _confirmDelete(Map<String, dynamic> log) {
         backgroundColor: const Color(0xFFaaff00),
         foregroundColor: const Color(0xFF080d00),
         onPressed: () async {
-          await Navigator.push(
+          final message = await Navigator.push<String?>(
             context,
             MaterialPageRoute(
               builder: (context) => AddCareLogScreen(plant: widget.plant),
@@ -301,6 +311,11 @@ void _confirmDelete(Map<String, dynamic> log) {
           );
           // Refresh care logs after returning
           _fetchCareLogs();
+          if (message != null && context.mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text(message)),
+            );
+          }
         },
         child: const Icon(Icons.add),
       ),

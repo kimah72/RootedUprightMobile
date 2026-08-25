@@ -224,7 +224,7 @@ class _EditCareLogScreenState extends State<EditCareLogScreen> {
 
       if (response.statusCode == 200) {
         if (!mounted) return;
-        Navigator.pop(context);
+        Navigator.pop(context, 'Care log entry updated.');
       } else {
         setState(() {
           _errorMessage = 'Failed to update log. Try again.';
